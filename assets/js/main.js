@@ -250,62 +250,53 @@
 
 })();
 
-const langToggleBtn = document.getElementById("langToggle");
-const bootstrapCss = document.getElementById("bootstrap-css");
-const bootstrapRtlCss = document.getElementById("bootstrap-rtl-css");
-let currentLang = "ar";
-
-function setLanguage(lang) {
-  currentLang = lang;
-
-  // Show/hide language text blocks
-  document.querySelectorAll(".lang").forEach((el) => {
-    if (el.classList.contains("lang-" + lang)) {
-      el.classList.add("active");
-    } else {
-      el.classList.remove("active");
-    }
-  });
-
-  // Change direction and html lang attribute
-  if (lang === "ar") {
-    document.documentElement.setAttribute("dir", "rtl");
-    document.documentElement.setAttribute("lang", "ar");
-    bootstrapCss.disabled = true;
-    bootstrapRtlCss.disabled = false;
-    langToggleBtn.textContent = "ENG";
-    document.title = "وتم لزجاج السيارات";
-  } else {
-    document.documentElement.setAttribute("dir", "ltr");
-    document.documentElement.setAttribute("lang", "en");
-    bootstrapCss.disabled = false;
-    bootstrapRtlCss.disabled = true;
-    langToggleBtn.textContent = "عربي";
-    document.title = "Watam Auto Glass";
-  }
-}
-
-langToggleBtn.addEventListener("click", () => {
-  setLanguage(currentLang === "en" ? "ar" : "en");
-});
-
-// Initialize
-setLanguage("ar");
-
+// Contact form -> WhatsApp (works for ar + en pages)
 const form = document.getElementById('contactForm');
-const phoneInput = document.getElementById('phone');
 
-form.addEventListener('submit', function (e) {
-  const phone = phoneInput.value.trim();
-  const saudiRegex = /^(05\d{8}|5\d{8}|\+9665\d{8})$/;
+if (form) {
+  const isAr = document.documentElement.lang === 'ar';
+  const note = document.getElementById('note');
+  const f = form.elements;
 
-  if (!saudiRegex.test(phone)) {
+  const t = isAr
+    ? {
+      badPhone: 'يرجى إدخال رقم هاتف سعودي صحيح',
+      opening: 'جاري فتح واتساب...',
+      lines: ['السلام عليكم، أرغب بطلب خدمة:', 'الاسم: ', 'الجوال: ', 'الخدمة: ', 'السيارة: ', 'التفاصيل: ']
+    }
+    : {
+      badPhone: 'Please enter a valid Saudi mobile number',
+      opening: 'Opening WhatsApp...',
+      lines: ['Hello, I would like to request a service:', 'Name: ', 'Mobile: ', 'Details: ']
+    };
+
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
-    phoneInput.classList.add('is-invalid');
-    phoneInput.focus();
-    alert('يرجى إدخال رقم هاتف سعودي صحيح');
-    return false;
-  }
 
-  phoneInput.classList.remove('is-invalid');
-});
+    const phone = f['phone'].value.trim();
+    const saudiRegex = /^(05\d{8}|5\d{8}|\+9665\d{8})$/;
+
+    if (!saudiRegex.test(phone)) {
+      f['phone'].classList.add('is-invalid');
+      f['phone'].focus();
+      note.textContent = t.badPhone;
+      return;
+    }
+    f['phone'].classList.remove('is-invalid');
+
+    const text = [
+      t.lines[0],
+      t.lines[1] + f['name'].value,
+      t.lines[2] + phone,
+      t.lines[3] + (f['msg'].value || '-')
+    ].join('\n');
+
+    window.open(
+      'https://api.whatsapp.com/send/?phone=966505282955&text=' + encodeURIComponent(text),
+      '_blank',
+      'noopener'
+    );
+    note.textContent = t.opening;
+    form.reset();
+  });
+}

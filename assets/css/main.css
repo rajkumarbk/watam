@@ -204,8 +204,8 @@ h6 {
   margin-right: 0px;
 }
 
-.header .logo h1,
-h1 span {
+.header .logo .navbar-brand,
+.header .logo .navbar-brand span {
   font-family: var(--header-font);
   font-size: 30px;
   margin: 0;
@@ -228,7 +228,7 @@ h1 span {
     order: 1;
   }
 
-  .header .logo h1 {
+  .header .logo .navbar-brand {
     font-size: 24px;
   }
 
@@ -405,22 +405,52 @@ html[lang="en"] .navmenu .lang-ar {
 @media (max-width: 1199px) {
   .mobile-nav-toggle {
     color: #f3bf7f;
-    font-size: 28px;
+    font-size: 0;
     line-height: 0;
+    width: 36px;
+    height: 36px;
     margin-right: 10px;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    display: block;
     z-index: 10000;
+    background: linear-gradient(currentColor, currentColor) center / 22px 2px no-repeat;
+    transition: background-size 0.3s;
   }
 
-  .mobile-nav-toggle:hover {
-    color: #ffcd8f;
-    transform: scale(1.1) rotate(90deg);
+  .header .mobile-nav-toggle::before,
+  .header .mobile-nav-toggle::after {
+    content: "";
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    height: 2px;
+    background: currentColor;
+    transition: transform 0.3s;
   }
 
-  .mobile-nav-toggle:active {
-    transform: scale(0.95);
+  .header .mobile-nav-toggle::before {
+    top: 10px;
+  }
+
+  .header .mobile-nav-toggle::after {
+    top: 24px;
+  }
+
+  .mobile-nav-active .mobile-nav-toggle {
+    background-size: 0 2px;
+  }
+
+  .mobile-nav-active .header .mobile-nav-toggle::before {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .mobile-nav-active .header .mobile-nav-toggle::after {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .mobile-nav-active .header {
+    z-index: 9999;
   }
 
   .navmenu {
@@ -432,25 +462,18 @@ html[lang="en"] .navmenu .lang-ar {
     display: none;
     list-style: none;
     position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 320px;
-    max-height: 70vh;
-    padding: 50px 0 20px 0;
+    top: 85px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: calc(100vh - 85px);
+    padding: 10px 0 20px 0;
     margin: 0;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: var(--accent-color);
     overflow-y: auto;
     overflow-x: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 9998;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-      0 4px 16px rgba(0, 0, 0, 0.2),
-      inset 0 1px 1px rgba(255, 255, 255, 0.3),
-      inset 0 -1px 1px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 20px 30px -20px rgba(0, 0, 0, 0.4);
   }
 
   /* Smooth scroll for overflow */
@@ -612,19 +635,6 @@ html[lang="en"] .navmenu .lang-ar {
     overflow: hidden;
   }
 
-  .mobile-nav-active .mobile-nav-toggle {
-    color: #f3bf7f;
-    position: absolute;
-    font-size: 24px;
-    top: 30px;
-    margin-left: 40%;
-    transform: translateX(-50%);
-    /* margin: 0; */
-    z-index: 10001;
-    animation: rotateIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    line-height: 1;
-  }
-
   @keyframes rotateIn {
     from {
       transform: translateX(-50%) rotate(-90deg);
@@ -635,19 +645,6 @@ html[lang="en"] .navmenu .lang-ar {
       transform: translateX(-50%) rotate(0deg);
       opacity: 1;
     }
-  }
-
-  .mobile-nav-active .navmenu {
-    position: fixed;
-    overflow: hidden;
-    inset: 0;
-    background: linear-gradient(135deg,
-        rgba(0, 0, 0, 0.4) 0%,
-        rgba(0, 0, 0, 0.6) 100%);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: fadeIn 0.4s ease-out;
   }
 
   @keyframes fadeIn {
@@ -662,19 +659,18 @@ html[lang="en"] .navmenu .lang-ar {
 
   .mobile-nav-active .navmenu>ul {
     display: block;
-    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
+    animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  @keyframes slideInRight {
+  @keyframes slideDown {
     from {
       opacity: 0;
-      transform: translateX(40px);
+      transform: translateY(-20px);
     }
 
     to {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateY(0);
     }
   }
 
@@ -786,6 +782,7 @@ html[lang="en"] .navmenu .lang-ar {
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  animation: ripple 1.8s infinite;
 }
 
 /* Optional hover effect */
@@ -797,7 +794,22 @@ html[lang="en"] .navmenu .lang-ar {
 /* Update the icon positioning */
 .whats-app i {
   margin-top: 0;
+  transform: scale(1.25);
   /* Remove the my-float margin */
+}
+
+@keyframes ripple {
+  0% {
+    box-shadow: 0 0 0 0 #25d366aa;
+  }
+
+  70% {
+    box-shadow: 0 0 0 15px #25d36600;
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 #25d36600;
+  }
 }
 
 .footer h4 {
@@ -940,11 +952,12 @@ html[lang="en"] .navmenu .lang-ar {
   right: 15px;
   bottom: 15px;
   z-index: 99999;
-  background-color: var(--accent-color);
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
+  background-color: var(--heading-color);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   transition: all 0.4s;
+  animation: float 2s ease-in-out infinite;
 }
 
 .scroll-top i {
@@ -961,6 +974,18 @@ html[lang="en"] .navmenu .lang-ar {
 .scroll-top.active {
   visibility: visible;
   opacity: 1;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 /*--------------------------------------------------------------
@@ -2721,9 +2746,9 @@ section,
 }
 
 .portfolio .portfolio-content {
-  background-color: var(--surface-color);
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-  height: 100%;
+  background-color: transparent;
+  box-shadow: none;
+  height: auto;
   overflow: hidden;
 }
 
@@ -2736,7 +2761,7 @@ section,
 .portfolio .portfolio-content .portfolio-info {
   background-color: var(--background-color);
   border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
-  padding: 25px 20px;
+  padding: 0;
   position: relative;
   z-index: 2;
 }
@@ -2953,6 +2978,20 @@ section,
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.05);
 }
 
+html[lang="ar"] #contactForm input[name="phone"] {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] #contactForm input[name="phone"]::placeholder {
+  text-align: right;
+}
+
+html[lang="en"] #contactForm input[name="phone"] {
+  direction: ltr;
+  text-align: left;
+}
+
 @media (max-width: 992px) {
   .contact .contact-form {
     padding: 1.5rem;
@@ -3019,6 +3058,13 @@ section,
 --------------------------------------------------------------*/
 .portfolio-details .portfolio-details-slider img {
   width: 100%;
+}
+
+.portfolio .portfolio-content img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  display: block;
 }
 
 .portfolio-details .swiper-wrapper {

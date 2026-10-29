@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://watamglass.com/sitemap.xml
+Sitemap: https://www.watamglass.com/sitemap.xml
